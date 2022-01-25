@@ -1,12 +1,7 @@
-# Name: ...
-# UW NetID: ...
-# Section: ...
-# CSE 140
-# Homework 3: Election prediction
-
 import csv
 import os
 import time
+from datetime import datetime as dt
 
 def read_csv(path):
     """
@@ -62,7 +57,19 @@ def most_recent_poll_row(poll_rows, pollster, state):
     Given a list of poll data rows, returns the most recent row with the
     specified pollster and state. If no such row exists, returns None.
     """
+    dates=[]
+    for x in poll_rows:
+        if x.get("State")==state and x.get("Pollster")==pollster:
+            dates.append(x)
+    latest= "Sep 09 2005"
+    for x in dates:
+        if earlier_date(x.get("Date"),latest):
+            latest=x.get("Date")
+    for x in poll_rows:
+        if x.get("State")==state and x.get("Pollster")==pollster and x.get("Date")==latest:
+            return x
 
+    return None
 ################################################################################
 # Problem 3: Pollster predictions
 ################################################################################
