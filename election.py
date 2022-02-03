@@ -8,6 +8,8 @@ import csv
 import os
 import time
 from datetime import datetime as dt
+from collections import defaultdict
+import pprint
 
 def read_csv(path):
     """
@@ -66,26 +68,16 @@ def most_recent_poll_row(poll_rows, pollster, state):
     latestdate=None
     latestpoll=None
     for x in poll_rows:
-        print("Row")
-        print(x)
         if x.get("State")==state and x.get("Pollster")==pollster:
-            print("correct state and pollster")
             if latestdate==None:
                 latestdate=x.get("Date")
             if latestpoll==None:
                 latestpoll=x
             if earlier_date(latestdate,x.get("Date")):
-                print("current last date")
-                print(latestdate)
-                print("new last date")
                 latestdate=x.get("Date")
-                print(latestdate)
-                print("new latest poll")
                 latestpoll=x
-                print(latestpoll)
 
 
-    print(latestpoll)
     return latestpoll
 ################################################################################
 # Problem 3: Pollster predictions
@@ -97,37 +89,62 @@ def unique_column_values(rows, column_name):
     containing all values in that column.
     """
     #TODO: Implement this function
-    pass
+    a=set()
+    for x in rows:
+        a.add(x.get(column_name))
+    return a
 
 def pollster_predictions(poll_rows):
     """
     Given a list of poll data rows, returns pollster predictions.
     """
     #TODO: Implement this function
-    response = []
 
-    for row in poll_rows:
-        response.append({row.get("Pollster"): {row.get("State"):(float(row.get("Dem"))-float(row.get("Rep")))}})
+    prediction = {}
+    pollsters = unique_column_values(poll_rows, 'Pollster')
+    states = unique_column_values(poll_rows, 'State')
+    for pollster in pollsters:
+        prediction[pollster] = {}
+        for state in states:
+            recent = [most_recent_poll_row(poll_rows, pollster, state)]
+            if recent != [None]:
+                prediction[pollster][state] = state_edges(recent)[state]
+    return prediction
 
-
+"""
 ################################################################################
 # Problem 4: Pollster errors
 ################################################################################
-
+"""
 def average_error(state_edges_predicted, state_edges_actual):
     """
     Given predicted state edges and actual state edges, returns
     the average error of the prediction.
     """
+    predicted=[]
+    actual=[]
+    sum=0
+    for x in state_edges_predicted:
+        predicted.append(x)
+        a=(state_edges_predicted[x])
+        b=(state_edges_actual[x])
+        difference=abs(a-state_edges_actual[x])
+        sum+=difference
+    average=sum/len(predicted)
+    return average
+
     #TODO: Implement this function
-    pass
 
 def pollster_errors(pollster_predictions, state_edges_actual):
     """
     Given pollster predictions and actual state edges, retuns pollster errors.
     """
+    dictionary={}
+    for x in pollster_predictions:
+        dictionary[x]=average_error(pollster_predictions[x],state_edges_actual)
+    return dictionary
     #TODO: Implement this function
-    pass
+
 
 
 ################################################################################
@@ -150,7 +167,12 @@ def pivot_nested_dict(nested_dict):
                 'z': {'b': 4} }
     """
      #TODO: Implement this function
-    pass
+
+    d = {}
+    for key, value in nested_dict.items():
+        for ikey, ivalue in value.items():
+            d.setdefault(ikey,{})[key] = ivalue
+    return d
 
 
 ################################################################################
@@ -192,6 +214,14 @@ def weighted_average(items, weights):
     """
     assert len(items) > 0
     assert len(items) == len(weights)
+    sum=0
+    sum2=0
+    for i in range(0,len(items)):
+        product=items[i]*weights[i]
+        sum+=product
+        sum2+=weights[i]
+    return sum/sum2
+
     #TODO: Implement this function
     pass
 
@@ -201,8 +231,25 @@ def average_edge(pollster_edges, pollster_errors):
     Given pollster edges and pollster errors, returns the average of these edges
     weighted by their respective pollster errors.
     """
-    #TODO: Implement this function
-    pass
+
+
+
+    list=[]
+    for x in pollster_errors:
+        list.append(pollster_errors[x])
+    list2=[]
+    for x in pollster_edges:
+         list2.append((pollster_edges[x]))
+    if len(list2) != len(list):
+        
+    b=weighted_average(list2,list)
+    print(type(b))
+    print(b)
+    print(list2)
+    print(list)
+    return int(b)
+
+
 
 
 ################################################################################
