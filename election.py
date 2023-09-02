@@ -1,8 +1,4 @@
-# Name: ...
-# UW NetID: ...
-# Section: ...
-# CSE 140
-# Homework 3: Election prediction
+
 
 import csv
 import os
