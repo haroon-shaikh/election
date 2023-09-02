@@ -18,9 +18,7 @@ def read_csv(path):
     return output
 
 
-################################################################################
-# Problem 1: State edges
-################################################################################
+
 
 def row_to_edge(row):
     """
@@ -45,22 +43,15 @@ def state_edges(election_result_rows):
 
 
 
-################################################################################
-# Problem 2: Find the most recent poll row
-################################################################################
+
 
 def earlier_date(date1, date2):
-    """
-    Given two dates as strings (formatted like "Oct 06 2012"), returns True if
-    date1 is after date2.
-    """
+
+ 
     return (time.strptime(date1, "%b %d %Y") < time.strptime(date2, "%b %d %Y"))
 
 def most_recent_poll_row(poll_rows, pollster, state):
-    """
-    Given a list of poll data rows, returns the most recent row with the
-    specified pollster and state. If no such row exists, returns None.
-    """
+    
     latestdate=None
     latestpoll=None
     for x in poll_rows:
@@ -75,15 +66,10 @@ def most_recent_poll_row(poll_rows, pollster, state):
 
 
     return latestpoll
-################################################################################
-# Problem 3: Pollster predictions
-################################################################################
+
 
 def unique_column_values(rows, column_name):
-    """
-    Given a list of rows and the name of a column (a string), returns a set
-    containing all values in that column.
-    """
+
     #TODO: Implement this function
     a=set()
     for x in rows:
@@ -91,11 +77,8 @@ def unique_column_values(rows, column_name):
     return a
 
 def pollster_predictions(poll_rows):
-    """
-    Given a list of poll data rows, returns pollster predictions.
-    """
-    #TODO: Implement this function
-
+    
+   
     prediction = {}
     pollsters = unique_column_values(poll_rows, 'Pollster')
     states = unique_column_values(poll_rows, 'State')
@@ -107,11 +90,7 @@ def pollster_predictions(poll_rows):
                 prediction[pollster][state] = state_edges(recent)[state]
     return prediction
 
-"""
-################################################################################
-# Problem 4: Pollster errors
-################################################################################
-"""
+
 def average_error(state_edges_predicted, state_edges_actual):
     """
     Given predicted state edges and actual state edges, returns
@@ -129,12 +108,10 @@ def average_error(state_edges_predicted, state_edges_actual):
     average=sum/len(predicted)
     return average
 
-    #TODO: Implement this function
+  
 
 def pollster_errors(pollster_predictions, state_edges_actual):
-    """
-    Given pollster predictions and actual state edges, retuns pollster errors.
-    """
+    
     dictionary={}
     for x in pollster_predictions:
         dictionary[x]=average_error(pollster_predictions[x],state_edges_actual)
@@ -143,9 +120,7 @@ def pollster_errors(pollster_predictions, state_edges_actual):
 
 
 
-################################################################################
-# Problem 5: Pivot a nested dictionary
-################################################################################
+
 
 def pivot_nested_dict(nested_dict):
     """
@@ -171,9 +146,7 @@ def pivot_nested_dict(nested_dict):
     return d
 
 
-################################################################################
-# Problem 6: Average the edges in a single state
-################################################################################
+
 
 def average_error_to_weight(error):
     """
@@ -182,8 +155,6 @@ def average_error_to_weight(error):
     """
     return error ** (-2)
 
-# The default average error of a pollster who did no polling in the
-# previous election.
 DEFAULT_AVERAGE_ERROR = 5.0
 
 def pollster_to_weight(pollster, pollster_errors):
@@ -198,16 +169,7 @@ def pollster_to_weight(pollster, pollster_errors):
 
 
 def weighted_average(items, weights):
-    """
-    Returns the weighted average of a list of items.
-
-    Arguments:
-    items is a list of numbers.
-    weights is a list of numbers, whose sum is nonzero.
-
-    Each weight in weights corresponds to the item in items at the same index.
-    items and weights must be the same length.
-    """
+    
     assert len(items) > 0
     assert len(items) == len(weights)
     sum=0
@@ -223,10 +185,7 @@ def weighted_average(items, weights):
 
 
 def average_edge(pollster_edges, pollster_errors):
-    """
-    Given pollster edges and pollster errors, returns the average of these edges
-    weighted by their respective pollster errors.
-    """
+
 
 
 
@@ -248,9 +207,6 @@ def average_edge(pollster_edges, pollster_errors):
 
 
 
-################################################################################
-# Problem 7: Predict the 2012 election
-################################################################################
 
 def predict_state_edges(pollster_predictions, pollster_errors):
     """
@@ -261,18 +217,11 @@ def predict_state_edges(pollster_predictions, pollster_errors):
     pass
 
 
-################################################################################
-# Electoral College, Main Function, etc.
-################################################################################
+
 
 def electoral_college_outcome(ec_rows, state_edges):
-    """
-    Given electoral college rows and state edges, returns the outcome of
-    the Electoral College, as a map from "Dem" or "Rep" to a number of
-    electoral votes won.  If a state has an edge of exactly 0.0, its votes
-    are evenly divided between both parties.
-    """
-    ec_votes = {}               # maps from state to number of electoral votes
+   
+    ec_votes = {}              
     for row in ec_rows:
         ec_votes[row["State"]] = float(row["Electors"])
 
@@ -290,10 +239,7 @@ def electoral_college_outcome(ec_rows, state_edges):
 
 
 def print_dict(dictionary):
-    """
-    Given a dictionary, prints its contents in sorted order by key.
-    Rounds float values to 8 decimal places.
-    """
+    
     for key in sorted(dictionary.keys()):
         value = dictionary[key]
         if type(value) == float:
@@ -302,17 +248,13 @@ def print_dict(dictionary):
 
 
 def main():
-    """
-    Main function, which is executed when election.py is run as a Python script.
-    """
+   
     # Read state edges from the 2008 election
     edges_2008 = state_edges(read_csv("data/2008-results.csv"))
 
-    # Read pollster predictions from the 2008 and 2012 election
     polls_2008 = pollster_predictions(read_csv("data/2008-polls.csv"))
     polls_2012 = pollster_predictions(read_csv("data/2012-polls.csv"))
 
-    # Compute pollster errors for the 2008 election
     error_2008 = pollster_errors(polls_2008, edges_2008)
 
     # Predict the 2012 state edges
@@ -329,10 +271,8 @@ def main():
     print ("Predicted 2012 Electoral College outcome:")
     print_dict(ec_2012)
     print
-    print("hello")
 
 
-# If this file, election.py, is run as a Python script (such as by typing
-# "python election.py" at the command shell), then run the main() function.
+
 if __name__ == "__main__":
     main()
